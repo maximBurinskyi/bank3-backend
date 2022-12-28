@@ -27,7 +27,7 @@ io.on('connection', (socket) => {
   socket.on("send", ({amount, account_number, purpose, sender, roomID}, callback) => {
     console.log(amount, purpose);
 
-   Transaction.create({amount: amount, purpose: purpose});
+   Transaction.create({amount: amount, purpose: purpose, account_number: account_number, sender: sender});
     //main logic
     User.findOne({account_number}).then(user => {
       if (!user) return callback({error: 'Sorry not permitted'});
@@ -228,6 +228,24 @@ app.get("users", async (req, res) => {
     balance: balance
   
   });
+})
+
+app.post('/transactions', async (req, res) => {
+  const {account_number} = req.body;
+  console.log(account_number);
+  const transactions = await Transaction.find({account_number});
+  res.json({
+    transactions: transactions
+  })
+})
+
+app.post('/transactions2', async (req, res) => {
+  const {email} = req.body;
+  console.log(email);
+  const transactions = await Transaction.find({sender: email});
+  res.json({
+    transactions: transactions
+  })
 })
 
 //Web socket
